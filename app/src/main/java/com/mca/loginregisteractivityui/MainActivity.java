@@ -1,6 +1,7 @@
 package com.mca.loginregisteractivityui;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     TextView forgetPass;
     String uname,upassword;
     ImageView imageView;
+
+    DBHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         signup=(Button) findViewById(R.id.signup);
         imageView=(ImageView) findViewById(R.id.imageView);
         forgetPass=(TextView) findViewById(R.id.forgetPass);
+        dbHelper=new DBHelper(this);
 
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,9 +55,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    // call for authentication method
-                    Toast.makeText(MainActivity.this,"touch on login button",Toast.LENGTH_LONG).show();
+                  Cursor cursor =dbHelper.login(uname,upassword);
 
+                  if(cursor.getCount()==0)
+                  {
+                      Toast.makeText(MainActivity.this,"Login Faild",Toast.LENGTH_LONG).show();
+
+                  }
+                  else
+                  {
+                      // call next activity after login
+                  }
 
                 }
             }
@@ -63,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                // code for forget password
-                Toast.makeText(MainActivity.this,"touch on forget password",Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(MainActivity.this,ActivityForgetPassword.class);
+                startActivity(intent);
 
             }
         });
