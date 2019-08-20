@@ -21,14 +21,12 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "TestDB";
     private static final String TABLE_NAME = "sampleTable";
     private static final int DATABASE_VERSION = 1;
-    private Context mContext;
 
-    String[] COL={KEY_ID,USER_NAME,NAME,PASSWORD,PHONE,EMAIL};
+    String[] COL={KEY_ID,USER_NAME,NAME,PASSWORD,PHONE,EMAIL};   // all db col names
 
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
     }
 
     @Override
@@ -45,13 +43,15 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertDetails(String username,String name,String password ,String phone,String email) {  // register new user in database
         SQLiteDatabase db = this.getWritableDatabase();
 
+        // put col values in the content values ----
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put("username", username);
         contentValues1.put("name", name);
         contentValues1.put("password", password);
         contentValues1.put("phone", phone);
         contentValues1.put("email", email);
-            db.insert(TABLE_NAME, null, contentValues1);
+
+            db.insert(TABLE_NAME, null, contentValues1);    // insertion commend
         db.close();
         return true;
     }
@@ -59,22 +59,34 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor;
 
-            cursor =db.query(TABLE_NAME,COL,"username=?",new String[]{username},null,null,null);
+            cursor =db.query(TABLE_NAME,COL,"username=? AND password=?",new String[]{username,password},null,null,null);
+
         return cursor;
     }
-    public Boolean resetpassword(String username,String password,String email) throws SQLException {
+
+    public Cursor getAllDetails(String id) throws SQLException {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor;
+
+        cursor =db.query(TABLE_NAME,COL,"eid=?",new String[]{id},null,null,null);
+
+        return cursor;
+    }
+
+
+    public boolean updateDetails(String id,String username,String name,String password ,String phone,String email) {  // register new user in database
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // put col values in the content values ----
         ContentValues contentValues1 = new ContentValues();
+        contentValues1.put("username", username);
+        contentValues1.put("name", name);
         contentValues1.put("password", password);
-// check account details valid or not
-        cursor =db.query(TABLE_NAME,COL,"username=?",new String[]{username},null,null,null);
+        contentValues1.put("phone", phone);
+        contentValues1.put("email", email);
 
-        if(cursor.getCount()==0)
-            return false;
-        else
-            db.update(TABLE_NAME,contentValues1,"username = ?",new String[] {username});   //update password
-
+        db.update(TABLE_NAME, contentValues1, "eid = ?", new String[]{id});   //update password
+        db.close();
         return true;
     }
 
@@ -88,9 +100,27 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (db1 != null && db1.isOpen())
             db1.close();
+    }
 
+    public Boolean resetpassword(String username,String password,String email) throws SQLException {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor;
+        ContentValues contentValues1 = new ContentValues();
+        contentValues1.put("password", password);
+// check account details valid or not
+        cursor =db.query(TABLE_NAME,COL,"username=? AND email=?",new String[]{username,email},null,null,null);
 
+        if(cursor.getCount()==0) {
+            return false;
+        }
+        else {
+            cursor.moveToNext();
+            db.update(TABLE_NAME, contentValues1, "eid = ?", new String[]{cursor.getString(0)});   //update password
+            return true;
+
+        }
 
     }
+
 
 }

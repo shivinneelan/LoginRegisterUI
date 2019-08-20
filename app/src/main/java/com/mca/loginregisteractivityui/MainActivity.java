@@ -59,12 +59,18 @@ public class MainActivity extends AppCompatActivity {
 
                   if(cursor.getCount()==0)
                   {
-                      Toast.makeText(MainActivity.this,"Login Faild",Toast.LENGTH_LONG).show();
+                      Toast.makeText(MainActivity.this,"Login Fail",Toast.LENGTH_LONG).show();
 
                   }
                   else
                   {
                       // call next activity after login
+                      cursor.moveToNext();
+                      String user_id=cursor.getString(0);
+                      dbHelper.closeDB();
+                      Intent intent=new Intent(MainActivity.this,UserHomeActivity.class);
+                      intent.putExtra("user_id",user_id);
+                      startActivity(intent);
                   }
 
                 }

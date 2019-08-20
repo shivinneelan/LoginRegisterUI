@@ -1,5 +1,6 @@
 package com.mca.loginregisteractivityui;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -56,8 +57,12 @@ public class RegisterActivity extends AppCompatActivity {
                                 // enter code for register new user.........................
 
                                Boolean result=dbHelper.insertDetails(uusername,uname,upass,uphone,uemail);
-                               if (result==true)
-                                Toast.makeText(RegisterActivity.this,"Success",Toast.LENGTH_LONG).show();
+                               if (result==true) {
+                                   Toast.makeText(RegisterActivity.this, "Success", Toast.LENGTH_LONG).show();
+                                   Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
+                                   startActivity(intent);
+                               }
+
                                else
                                    Toast.makeText(RegisterActivity.this,"Insertion Fail",Toast.LENGTH_LONG).show();
 
